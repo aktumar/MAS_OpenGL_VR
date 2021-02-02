@@ -1,0 +1,7 @@
+﻿  CGLRenderModel.cpp
+  CMainApplication.cpp
+d:\работа\2018-2020 нии\vr+gl\в целом\vr(не трогать)(последняя рабочая версия)\vr\cmainapplication.cpp(256): warning C4244: инициализация: преобразование "float" в "int", возможна потеря данных
+  main.cpp
+  Matrices.cpp
+  Создание кода...
+  VR.vcxproj -> D:\Работа\2018-2020 НИИ\VR+GL\В целом\VR(НЕ ТРОГАТЬ)(последняя рабочая версия)\Debug\VR.exe
