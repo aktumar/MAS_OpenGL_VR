@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-class shader
+class Shader
 {
 public:
 	GLuint vsh, fsh, program;

@@ -1,18 +1,32 @@
+#include <iostream>
+
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <glm-master/glm/glm.hpp>
 #include <glm-master/glm/gtc/matrix_transform.hpp>
 #include <glm-master/glm/gtc/type_ptr.hpp>
-#include <iostream>
 
-static GLuint viewLoc, modelLoc, projectionLoc;
-static glm::mat4 view(1), model(1), projection(1);
+static GLuint viewLoc;
+static GLuint modelLoc;
+static GLuint projectionLoc;
 
-static glm::vec3 from, to;
+static glm::mat4 view(1);
+static glm::mat4 model(1);
+static glm::mat4 projection(1);
 
-static bool isLeftDown, isRightDown, isMiddleDown;
-static bool firstLeftMove, firstRightMove, firstMiddleMove;
-static double prevX, prevY;
+static glm::vec3 from;
+static glm::vec3 to;
+
+static bool isLeftDown;
+static bool isRightDown;
+static bool isMiddleDown;
+
+static bool firstLeftMove;
+static bool firstRightMove;
+static bool firstMiddleMove;
+
+static double prevX;
+static double prevY;
 
 class Mouse
 {
@@ -22,6 +36,7 @@ public:
 		x /= radius;
 		y /= radius;
 		float rad2 = x*x + y*y;
+		
 		if (rad2 > 1.0f)
 		{
 			float rad = sqrt(rad2);
@@ -43,6 +58,7 @@ public:
 
 		glm::vec3 v = glm::cross(from, to);
 		float  e = glm::dot(from, to);
+
 		if (e > 1.0f - 1.e-9f)
 		{
 			return glm::mat4(1.0);
@@ -71,13 +87,19 @@ public:
 			mtx[14] = 0.0f;
 			mtx[15] = 1.0f;
 
-			return glm::mat4(mtx[0], mtx[1], mtx[2], mtx[3], mtx[4], mtx[5], mtx[6], mtx[7], mtx[8], mtx[9], mtx[10], mtx[11], mtx[12], mtx[13], mtx[14], mtx[15]);
+			return glm::mat4(
+				mtx[0], mtx[1], mtx[2], mtx[3], 
+				mtx[4], mtx[5], mtx[6], mtx[7], 
+				mtx[8], mtx[9], mtx[10], mtx[11], 
+				mtx[12], mtx[13], mtx[14], mtx[15]
+			);
 		}
 	}
 
 	static void CursorPosCallback(int x, int y)//GLFWwindow* pWindow
 	{
 		if (isLeftDown)
+		{
 			if (firstLeftMove)
 			{
 				prevX = x;
@@ -97,7 +119,9 @@ public:
 				model = projectionMatrix(from, to)*model;
 				from = to;
 			}
+		}
 		if (isMiddleDown)
+		{
 			if (firstMiddleMove)
 			{
 				prevX = x;
@@ -111,7 +135,9 @@ public:
 				prevX = x;
 				prevY = y;
 			}
+		}
 		if (isRightDown)
+		{
 			if (firstRightMove)
 			{
 				prevX = x;
@@ -124,6 +150,7 @@ public:
 				prevX = x;
 				prevY = y;
 			}
+		}
 
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -132,7 +159,7 @@ public:
 		glutPostRedisplay();
 	}
 
-	static void MouseCallback(int Button, int Action, int x, int y)//GLFWwindow* pWindow
+	static void MouseCallback(int Button, int Action, int x, int y)
 	{
 		if (Button == GLUT_LEFT_BUTTON && Action == GLUT_DOWN)
 		{

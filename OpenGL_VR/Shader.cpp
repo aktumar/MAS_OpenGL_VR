@@ -5,14 +5,16 @@
 #include <iostream>
 #include <fstream>
 
-void shader::loadFile(const char *fn, std::string &str)
+void Shader::loadFile(const char *fn, std::string &str)
 {
 	std::ifstream in(fn);
+
 	if (!in.is_open())
 	{
 		std::cout << "The file of shader " << fn << "   cannot be opened\n";
 		return;
 	}
+	
 	char tmp[300];
 	while (!in.eof())
 	{
@@ -22,7 +24,7 @@ void shader::loadFile(const char *fn, std::string &str)
 	}
 }
 
-GLuint shader::loadShader(std::string &source, GLuint mode)
+GLuint Shader::loadShader(std::string &source, GLuint mode)
 {
 	GLuint sh = glCreateShader(mode);
 
@@ -43,7 +45,7 @@ GLuint shader::loadShader(std::string &source, GLuint mode)
 	return sh;
 }
 
-shader::shader(const char *vshh, const char *fshh)
+Shader::Shader(const char *vshh, const char *fshh)
 {
 	std::string source;
 
@@ -62,7 +64,7 @@ shader::shader(const char *vshh, const char *fshh)
 	glLinkProgram(program);
 }
 
-shader::~shader()
+Shader::~Shader()
 {
 	glDetachShader(program, vsh);
 	glDetachShader(program, fsh);
@@ -71,18 +73,17 @@ shader::~shader()
 	glDeleteProgram(program);
 }
 
-void shader::useShader()
+void Shader::useShader()
 {
 	glUseProgram(program);
 }
 
-void shader::delShader()
+void Shader::delShader()
 {
 	glUseProgram(0);
 }
 
-GLuint shader::getProgramId()
+GLuint Shader::getProgramId()
 {
 	return program;
 }
-

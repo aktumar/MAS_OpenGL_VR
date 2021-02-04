@@ -1,5 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
-#define fileNum 3
+#define FILE_NUM 3
  
 //1. _3_3_3 Cube
 //2. _25_77_29 First
@@ -12,71 +12,76 @@
 //13-14. _100_100_21_Johansen
 //15-16. _149_189_16_Johansen
 
-
-#include <GL/glew.h>
-#include <GL/freeglut.h>
 #include <iostream>
-#include <vector>
-#include "Shader.h"
-#include "Mouse.h"
-#include "Generation.h"
 #include <iomanip>
 #include <fstream> 
+#include <vector>
 
+#include <GL/freeglut.h>
+#include <GL/glew.h>
 
-shader* mainShader;
+#include "Generation.h"
+#include "Shader.h"
+#include "Mouse.h"
 
-GLuint vbo, posLoc;
-GLuint cvboobj, colorobjLoc;
-GLuint cvboline, colorlineLoc;
+Shader* shaderMain;
+
+GLuint vbo;
+GLuint cboObject;
+GLuint cboLine;
+
+GLuint posLoc;
+GLuint colorObjectLoc;
+GLuint colorLineLoc;
 
 std::vector<float> verticesMain;
 
-uintptr_t colorModelSize, verticesModelSize, verticesHoleSize;
+uintptr_t colorModelSize;
+uintptr_t verticesModelSize;
+uintptr_t verticesHoleSize;
 
 void myInit()
 {
-	mainShader = new shader("main.vs", "main.frag"); mainShader->useShader();
+	shaderMain = new Shader("main.vs", "main.frag"); 
+	shaderMain->useShader();
 
-	glClearColor(0.230320f, 0.345f, 0.7865f, 1.0f);
+	posLoc = glGetAttribLocation(shaderMain->getProgramId(), "pos");
+	colorObjectLoc = glGetAttribLocation(shaderMain->getProgramId(), "color");
+	colorLineLoc = glGetAttribLocation(shaderMain->getProgramId(), "color");
 
-	posLoc = glGetAttribLocation(mainShader->getProgramId(), "pos");
-	colorobjLoc = glGetAttribLocation(mainShader->getProgramId(), "color");
-	colorlineLoc = glGetAttribLocation(mainShader->getProgramId(), "color");
+	viewLoc = glGetUniformLocation(shaderMain->getProgramId(), "view");
+	modelLoc = glGetUniformLocation(shaderMain->getProgramId(), "model");
+	projectionLoc = glGetUniformLocation(shaderMain->getProgramId(), "projection");
 
-	viewLoc = glGetUniformLocation(mainShader->getProgramId(), "view");
-	modelLoc = glGetUniformLocation(mainShader->getProgramId(), "model");
-	projectionLoc = glGetUniformLocation(mainShader->getProgramId(), "projection");
+	FileGen(FILE_NUM);
 
-	/***************************************************************************************/
-	FileGen(fileNum);
-	/***************************************************************************************/
-
-	//VERTICES
 	glm::vec3 ***vertices = new glm::vec3 **[2 * Nz];
-	for (int i = 0; i < 2 * Nz; i++) {
+	for (int i = 0; i < 2 * Nz; i++) 
+	{
 		vertices[i] = new glm::vec3 *[2 * Ny];
-		for (int j = 0; j < 2 * Ny; j++) {
+		for (int j = 0; j < 2 * Ny; j++) 
+		{
 			vertices[i][j] = new glm::vec3[2 * Nx];
-			for (int k = 0; k < 2 * Nx; k++) {}
 		}
 	}
 
-	float p;
-	int wx, wy, wz = 0;
+	int wx = 0;
+	int wy = 0;
+	int wz = 0;
+
 	for (int i = 0; i < Nz; i++)
 	{
-		for (int i1 = 0; i1 < 2; i1++)//for lower and upper planes
+		for (int i1 = 0; i1 < 2; i1++)//lower and upper planes
 		{
 			wy = 0;
 			for (int j = 0; j < Ny; j++)
 			{
-				for (int j1 = 0; j1 < 2; j1++)//for front and back needles
+				for (int j1 = 0; j1 < 2; j1++)//front and back needles
 				{
 					wx = 0;
 					for (int k = 0; k < Nx; k++)
 					{
-						for (int k1 = 0; k1 < 2; k1++)//for right and left pooints
+						for (int k1 = 0; k1 < 2; k1++)//right and left points
 						{
 							int check = coord[j + j1][k + k1][2] - coord[j + j1][k + k1][5];
 							if (check == 0)
@@ -87,7 +92,8 @@ void myInit()
 							}
 							else
 							{
-								p = (zcorn[wz][wy][wx] - coord[j + j1][k + k1][5]) / check;
+
+								float p = (zcorn[wz][wy][wx] - coord[j + j1][k + k1][5]) / check;
 								vertices[wz][wy][wx].x = (coord[j + j1][k + k1][3] + (coord[j + j1][k + k1][0] - coord[j + j1][k + k1][3])*p);
 								vertices[wz][wy][wx].y = (coord[j + j1][k + k1][4] + (coord[j + j1][k + k1][1] - coord[j + j1][k + k1][4])*p);
 								vertices[wz][wy][wx].z = (zcorn[wz][wy][wx]);
@@ -102,63 +108,92 @@ void myInit()
 		}
 	}
 	
-	//CENTRE AND DIV
-	float  DIV, irr = 0;
-	glm::vec3 max, min, centr;
+	float division;
+	float irr = 0;
+
+	glm::vec3 valueMax;
+	glm::vec3 valueMin;
+	glm::vec3 valueCentre;
 
 	for (int i = 0; i < 2; i++)
 	{
-		max = vertices[0][0][0], min = vertices[0][0][0];
+		valueMax = vertices[0][0][0];
+		valueMin = vertices[0][0][0];
 		for (int i = 0; i < 2 * Nz; i++)
 		{
 			for (int j = 0; j < 2 * Ny; j++)
 			{
 				for (int k = 0; k < 2 * Nx; k++)
 				{
-					if (vertices[i][j][k].x > max.x) max.x = vertices[i][j][k].x;
-					if (vertices[i][j][k].x < min.x) min.x = vertices[i][j][k].x;
-					if (vertices[i][j][k].y > max.y) max.y = vertices[i][j][k].y;
-					if (vertices[i][j][k].y < min.y) min.y = vertices[i][j][k].y;
-					if (vertices[i][j][k].z > max.z) max.z = vertices[i][j][k].z;
-					if (vertices[i][j][k].z < min.z) min.z = vertices[i][j][k].z;
+					if (vertices[i][j][k].x > valueMax.x) 
+						valueMax.x = vertices[i][j][k].x;
+					if (vertices[i][j][k].x < valueMin.x) 
+						valueMin.x = vertices[i][j][k].x;
+					if (vertices[i][j][k].y > valueMax.y) 
+						valueMax.y = vertices[i][j][k].y;
+					if (vertices[i][j][k].y < valueMin.y) 
+						valueMin.y = vertices[i][j][k].y;
+					if (vertices[i][j][k].z > valueMax.z) 
+						valueMax.z = vertices[i][j][k].z;
+					if (vertices[i][j][k].z < valueMin.z) 
+						valueMin.z = vertices[i][j][k].z;
 				}
 			}
 		}
+
 		if (irr == 0)
 		{
-			glm::vec3 d = max - min;
-			if (d.x >= d.y && d.x >= d.z)DIV = d.x;
-			else { if (d.y >= d.x && d.y >= d.z)DIV = d.y; else DIV = d.z; }
-			std::cout << "MAXx = " << d.x << std::endl;
-			std::cout << "MAXy = " << d.y << std::endl;
-			std::cout << "MAXz = " << d.z << std::endl;
-			std::cout << "DIV  = " << DIV << std::endl;
+			glm::vec3 d = valueMax - valueMin;
 
-			for (int i = 0; i < 2 * Nz; i++)
-				for (int j = 0; j < 2 * Ny; j++)
-					for (int k = 0; k < 2 * Nx; k++)
-						vertices[i][j][k] /= DIV;
-			irr++;
-		}
-		else
-		{
-			centr = (max + min) / glm::vec3(2, 2, 2);
+			if (d.x >= d.y && d.x >= d.z)
+			{
+				division = d.x;
+			}
+			else 
+			{ 
+				if (d.y >= d.x && d.y >= d.z)
+				{
+					division = d.y;
+				} 
+				else 
+				{
+					division = d.z; 
+				}
+			}
+
 			for (int i = 0; i < 2 * Nz; i++)
 			{
 				for (int j = 0; j < 2 * Ny; j++)
 				{
 					for (int k = 0; k < 2 * Nx; k++)
 					{
-						vertices[i][j][k].z = (vertices[i][j][k].z - min.z) / (max.z - min.z);//raswirenie po z
-						vertices[i][j][k] -= centr;
+						vertices[i][j][k] /= division;
+					}
+				}
+			}
+			irr++;
+		}
+		else
+		{
+			valueCentre = (valueMax + valueMin) / glm::vec3(2, 2, 2);
+			for (int i = 0; i < 2 * Nz; i++)
+			{
+				for (int j = 0; j < 2 * Ny; j++)
+				{
+					for (int k = 0; k < 2 * Nx; k++)
+					{
+						vertices[i][j][k].z = (vertices[i][j][k].z - valueMin.z) / (valueMax.z - valueMin.z);
+						vertices[i][j][k] -= valueCentre;
 					}
 				}
 			}
 		}
 	}
 	
-	//verticesMain
-	int Nxp, Nyp, Nzp = 0;
+	int Nxp = 0;
+	int Nyp = 0;
+	int Nzp = 0;
+
 	for (int i = 0; i < Nz; i++)
 	{
 		Nyp = 0;
@@ -169,11 +204,9 @@ void myInit()
 			{
 				if (actnum[i][j][k] == 1)
 				{
-
 					if (i == 0 || actnum[i - 1][j][k] == 0)
 					{
 						//draw cube upper plane
-
 						verticesMain.push_back(vertices[Nzp][Nyp + 1][Nxp + 1].x);
 						verticesMain.push_back(vertices[Nzp][Nyp + 1][Nxp + 1].y);
 						verticesMain.push_back(vertices[Nzp][Nyp + 1][Nxp + 1].z);
@@ -385,37 +418,42 @@ void myInit()
 		}
 		Nzp += 2;
 	}
-
-
+	
 	verticesModelSize = verticesMain.size();
-	colorModelSize = colorTri.size();
-
-
+	colorModelSize = colorTriangle.size();
 	verticesHoleSize = verticesMain.size() - verticesModelSize;
-	/**************************************************************************************/
 
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, verticesMain.size() * sizeof(float), verticesMain.data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
-	std::ofstream fout("output.txt");
 
-	//std::cout << "VOT = " << std::endl;
-	for (int i = 0; i < verticesMain.size(); i=i+3)
+	glGenBuffers(1, &cboObject);
+	glBindBuffer(GL_ARRAY_BUFFER, cboObject);
+	glBufferData(GL_ARRAY_BUFFER, colorTriangle.size() * sizeof(float), colorTriangle.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glGenBuffers(1, &cboLine);
+	glBindBuffer(GL_ARRAY_BUFFER, cboLine);
+	glBufferData(GL_ARRAY_BUFFER, colorLine.size() * sizeof(float), colorLine.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	//std::ofstream fout("output.txt");
+
+	/*for (int i = 0; i < verticesMain.size(); i=i+3)
 	{
 		fout << "v " << verticesMain[i];
 		fout << " " << verticesMain[i + 1];
 		fout << " " << verticesMain[i + 2];
-		fout << " " << colorTri[i];
-		fout << " " << colorTri[i+1];
-		fout << " " << colorTri[i+2]<< std::endl;
+		fout << " " << colorTriangle[i];
+		fout << " " << colorTriangle[i+1];
+		fout << " " << colorTriangle[i+2]<< std::endl;
 
 		//fout << "vn " << verticesMain[i] + 0.000011;
 		//fout << " " << verticesMain[i + 1] + 0.000011;
 		//fout << " " << verticesMain[i + 2] + 0.000011 << std::endl;
 
-	}
+	}*/
 	
 	/*std::cout << "VOT = " << std::endl;
 	std::cout << "VOT = " << std::endl;
@@ -424,26 +462,16 @@ void myInit()
 	std::cout << "VOT = " << std::endl;
 	std::cout << "VOT = " << std::endl;
 	std::cout << "VOT = " << std::endl;
-	*/
-
-	//int aktum = 0;
+	
 	for (int i = 0; i < verticesMain.size()/3; i = i + 3)
 	{
 		fout << "f " << i + 1 << "//" << i + 1<<" ";
 		fout << i + 2 << "//" << i + 2 << " ";
 		fout << i + 3 << "//" << i + 3 << std::endl;
-		//aktum++;
 	}
+	*/
 
-	glGenBuffers(1, &cvboobj);
-	glBindBuffer(GL_ARRAY_BUFFER, cvboobj);
-	glBufferData(GL_ARRAY_BUFFER, colorTri.size() * sizeof(float), colorTri.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &cvboline);
-	glBindBuffer(GL_ARRAY_BUFFER, cvboline);
-	glBufferData(GL_ARRAY_BUFFER, colorLine.size() * sizeof(float), colorLine.data(), GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	//DELETE
 	for (int i = 0; i < Ny + 1; i++)
@@ -455,7 +483,6 @@ void myInit()
 		delete[] coord[i];
 	}
 	delete coord;
-	std::cout << "coord udalilsya uspewno" << std::endl;
 
 	for (int i = 0; i < 2 * Nz; i++)
 	{
@@ -466,7 +493,6 @@ void myInit()
 		delete[] zcorn[i];
 	}
 	delete zcorn;
-	std::cout << "zcorn udalilsya uspewno" << std::endl;
 
 	for (int i = 0; i < Nz; i++)
 	{
@@ -477,7 +503,6 @@ void myInit()
 		delete[] actnum[i];
 	}
 	delete actnum;
-	std::cout << "actnum udalilsya uspewno" << std::endl;
 
 	for (int i = 0; i < Nz; i++)
 	{
@@ -488,7 +513,6 @@ void myInit()
 		delete[] ntg[i];
 	}
 	delete ntg;
-	std::cout << "ntg udalilsya uspewno" << std::endl;
 
 	for (int i = 0; i < 2 * Nz; i++)
 	{
@@ -499,7 +523,6 @@ void myInit()
 		delete[] vertices[i];
 	}
 	delete vertices;
-	std::cout << "vertices udalilsya uspewno" << std::endl;
 }
 
 void myDisplay()
@@ -507,33 +530,33 @@ void myDisplay()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 
-	mainShader->useShader();
+	shaderMain->useShader();
 
 	glEnableVertexAttribArray(posLoc);
-	glEnableVertexAttribArray(colorobjLoc);
-	glEnableVertexAttribArray(colorlineLoc);
+	glEnableVertexAttribArray(colorObjectLoc);
+	glEnableVertexAttribArray(colorLineLoc);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, cvboobj);
-	glVertexAttribPointer(colorobjLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, cboObject);
+	glVertexAttribPointer(colorObjectLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glDrawArrays(GL_TRIANGLES, 0, verticesModelSize / 3);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(verticesModelSize * sizeof(float)));
-	glBindBuffer(GL_ARRAY_BUFFER, cvboobj);
-	glVertexAttribPointer(colorobjLoc, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(colorModelSize * sizeof(float)));
+	glBindBuffer(GL_ARRAY_BUFFER, cboObject);
+	glVertexAttribPointer(colorObjectLoc, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)(colorModelSize * sizeof(float)));
 	glDrawArrays(GL_TRIANGLES, 0, verticesHoleSize / 3);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, cvboline);
-	glVertexAttribPointer(colorlineLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, cboLine);
+	glVertexAttribPointer(colorLineLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	//glDrawArrays(GL_LINES, 0, verticesModelSize / 3);
 	
 	glDisableVertexAttribArray(posLoc);
-	glDisableVertexAttribArray(colorobjLoc);
-	glDisableVertexAttribArray(colorlineLoc);
+	glDisableVertexAttribArray(colorObjectLoc);
+	glDisableVertexAttribArray(colorLineLoc);
 
 	glutSwapBuffers();
 }
@@ -542,7 +565,7 @@ int main(int argc, char ** argv)
 {
 	glutInit(&argc, argv);
 	glutInitWindowPosition(10, 10);
-	glutInitWindowSize(650, 650);//512
+	glutInitWindowSize(650, 650);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow(argv[0]);
 
@@ -554,6 +577,6 @@ int main(int argc, char ** argv)
 	glutMotionFunc(Mouse::CursorPosCallback);
 
 	glutMainLoop();
-	delete mainShader;
+	delete shaderMain;
 }
 
