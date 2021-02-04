@@ -4,7 +4,7 @@
 
 Input data - .GRDECL format. Files of this format store data describing three-dimensional models consisting of Nx * Ny * Nz cells:
 
-Library - OpenGL (GLM, GLSL), OpenVR
+Library - OpenGL (GLM, GLSL, FreeGLUT), OpenVR
 
 Environment - VR (SteamVR), AR (Unity)
 
@@ -85,3 +85,5 @@ Test model of layer – Sample, visualized in VR/AR. Oil and gas reservoir with 
 ##### References
 
 [1] “OpenVR Quick Start”, accessed June 15, 2018, https://github.com/osudrl/CassieVrControls/wiki/OpenVR-Quick-Start
+
+[2] “Hellovr”, accessed February 1, 2018, https://github.com/ValveSoftware/openvr
