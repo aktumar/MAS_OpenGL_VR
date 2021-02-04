@@ -70,7 +70,7 @@ Field layer model – open data of the project SAIGUP, visualized in the virtual
 
 ![Image alt](https://github.com/aktumar/2017_OpenGL_VR/blob/master/img/6.png)
 
-![Image alt](https://github.com/aktumar/2017_OpenGL_VR/blob/master/img/5.jpeg)
+![Image alt](https://github.com/aktumar/2017_OpenGL_VR/blob/master/img/15.png)
 
 
 
