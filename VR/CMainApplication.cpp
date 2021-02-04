@@ -229,11 +229,12 @@ void CMainApplication::AddModelToScene(std::vector<float> &vertdataarray)
 
 	//vertices
 	glm::vec3 *** vertices = new glm::vec3 **[2 * Nz];
-	for (int i = 0; i < 2 * Nz; i++) {
+	for (int i = 0; i < 2 * Nz; i++) 
+	{
 		vertices[i] = new glm::vec3 *[2 * Ny];
-		for (int j = 0; j < 2 * Ny; j++) {
+		for (int j = 0; j < 2 * Ny; j++) 
+		{
 			vertices[i][j] = new glm::vec3[2 * Nx];
-			for (int k = 0; k < 2 * Nx; k++) {}
 		}
 	}
 
@@ -289,49 +290,93 @@ void CMainApplication::AddModelToScene(std::vector<float> &vertdataarray)
 			{
 				for (int k = 0; k < 2 * Nx; k++)
 				{
-					if (vertices[i][j][k].x > max.x) max.x = vertices[i][j][k].x;
-					if (vertices[i][j][k].x < min.x) min.x = vertices[i][j][k].x;
-					if (vertices[i][j][k].y > max.y) max.y = vertices[i][j][k].y;
-					if (vertices[i][j][k].y < min.y) min.y = vertices[i][j][k].y;
-					if (vertices[i][j][k].z > max.z) max.z = vertices[i][j][k].z;
-					if (vertices[i][j][k].z < min.z) min.z = vertices[i][j][k].z;
+					if (vertices[i][j][k].x > max.x)
+					{
+						max.x = vertices[i][j][k].x;
+					}
+					if (vertices[i][j][k].x < min.x) 
+					{
+						min.x = vertices[i][j][k].x;
+					}
+					if (vertices[i][j][k].y > max.y) 
+					{
+						max.y = vertices[i][j][k].y;
+					}
+					if (vertices[i][j][k].y < min.y) 
+					{ 
+						min.y = vertices[i][j][k].y; 
+					}
+					if (vertices[i][j][k].z > max.z) 
+					{
+						max.z = vertices[i][j][k].z; 
+					}
+					if (vertices[i][j][k].z < min.z) 
+					{
+						min.z = vertices[i][j][k].z; 
+					}
 				}
 			}
 		}
 		if (irr == 0)
 		{
 			glm::vec3 d = max - min;
-			if (d.x >= d.y && d.x >= d.z)DIV = d.x;
-			else { if (d.y >= d.x && d.y >= d.z)DIV = d.y; else DIV = d.z; }
-			std::cout << "MAXx = " << d.x << std::endl;
-			std::cout << "MAXy = " << d.y << std::endl;
-			std::cout << "MAXz = " << d.z << std::endl;
-			std::cout << "DIV  = " << DIV << std::endl;
+			if (d.x >= d.y && d.x >= d.z) 
+			{
+				DIV = d.x; 
+			}
+			else 
+			{ 
+				if (d.y >= d.x && d.y >= d.z) 
+				{ 
+					DIV = d.y; 
+				}
+				else 
+				{
+					DIV = d.z; 
+				}
+			}
 
 			for (int i = 0; i < 2 * Nz; i++)
+			{
 				for (int j = 0; j < 2 * Ny; j++)
+				{
 					for (int k = 0; k < 2 * Nx; k++)
+					{
 						vertices[i][j][k] /= DIV;
+					}
+				}
+			}
 		}
 		if (irr == 1)
 		{
 			centr = (max + min) / glm::vec3(2, 2, 2);
 			for (int i = 0; i < 2 * Nz; i++)
+			{
 				for (int j = 0; j < 2 * Ny; j++)
+				{
 					for (int k = 0; k < 2 * Nx; k++)
+					{
 						vertices[i][j][k] -= centr;
+					}
+				}
+			}
 		}
 		if (irr == 2)
 		{
 			centr = (max + min) / glm::vec3(2, 2, 2);
 			for (int i = 0; i < 2 * Nz; i++)
+			{
 				for (int j = 0; j < 2 * Ny; j++)
+				{
 					for (int k = 0; k < 2 * Nx; k++)
+					{
 						vertices[i][j][k].z = 1 * ((vertices[i][j][k].z - min.z) / (max.z - min.z));
+					}
+				}
+			}
 		}
 	}
 
-	//verticesMain
 	int Nxp, Nyp, Nzp = 0;
 	for (int i = 0; i < Nz; i++)
 	{
@@ -623,7 +668,6 @@ void CMainApplication::AddModelToScene(std::vector<float> &vertdataarray)
 	}
 	verticesHoleSize = vertdataarray.size() - verticesModelSize;
 
-	//DELETE
 	fclose(ptrfile1);
 	fclose(ptrfile2);
 	fclose(ptrfile3);
@@ -637,7 +681,6 @@ void CMainApplication::AddModelToScene(std::vector<float> &vertdataarray)
 		delete[] coord[i];
 	}
 	delete coord;
-	//std::cout << "coord udalilsya uspewno" << std::endl;
 
 	for (int i = 0; i < 2 * Nz; i++)
 	{
@@ -648,7 +691,6 @@ void CMainApplication::AddModelToScene(std::vector<float> &vertdataarray)
 		delete[] zcorn[i];
 	}
 	delete zcorn;
-	//std::cout << "zcorn udalilsya uspewno" << std::endl;
 
 	for (int i = 0; i < Nz; i++)
 	{
@@ -659,7 +701,6 @@ void CMainApplication::AddModelToScene(std::vector<float> &vertdataarray)
 		delete[] actnum[i];
 	}
 	delete actnum;
-	//std::cout << "actnum udalilsya uspewno" << std::endl;
 
 	for (int i = 0; i < Nz; i++)
 	{
@@ -670,7 +711,6 @@ void CMainApplication::AddModelToScene(std::vector<float> &vertdataarray)
 		delete[] ntg[i];
 	}
 	delete ntg;
-	//std::cout << "ntg udalilsya uspewno" << std::endl;
 
 	for (int i = 0; i < 2 * Nz; i++)
 	{
@@ -681,8 +721,6 @@ void CMainApplication::AddModelToScene(std::vector<float> &vertdataarray)
 		delete[] vertices[i];
 	}
 	delete vertices;
-	//std::cout << "vertices udalilsya uspewno" << std::endl;
-
 }
 void CMainApplication::FileGeneration(int NUM)
 {
@@ -699,16 +737,6 @@ void CMainApplication::FileGeneration(int NUM)
 		break;
 
 	case 2:
-		ptrfile1 = fopen("Data/_25_77_29 First/COORD.inc", "r+");
-		ptrfile2 = fopen("Data/_25_77_29 First/ZCORN.inc", "r+");
-		ptrfile3 = fopen("Data/_25_77_29 First/ACTNUM.inc", "r+");
-		ptrfile4 = fopen("Data/_25_77_29 First/NTG.inc", "r+");
-		Nx = 25;
-		Ny = 77;
-		Nz = 29;
-		break;
-
-	case 3:
 		ptrfile1 = fopen("Data/_33_33_11_Sample/COORD.inc", "r+");
 		ptrfile2 = fopen("Data/_33_33_11_Sample/ZCORN.inc", "r+");
 		ptrfile3 = fopen("Data/_33_33_11_Sample/ACTNUM.inc", "r+");
@@ -718,149 +746,21 @@ void CMainApplication::FileGeneration(int NUM)
 		Nz = 11;
 		break;
 
-	case 4:
-		ptrfile1 = fopen("Data/_36_77_33_V_Moldabek/COORD.inc", "r+");
-		ptrfile2 = fopen("Data/_36_77_33_V_Moldabek/ZCORN.inc", "r+");
-		ptrfile3 = fopen("Data/_36_77_33_V_Moldabek/ACTNUM.inc", "r+");
-		ptrfile4 = fopen("Data/_36_77_33_V_Moldabek/PERMX.inc", "r+");
-		Nx = 36;
-		Ny = 77;
-		Nz = 33;
-		break;
-
-	case 5:
-		ptrfile1 = fopen("Data/_36_77_33_V_Moldabek/withoutBad/COORD.inc", "r+");
-		ptrfile2 = fopen("Data/_36_77_33_V_Moldabek/withoutBad/ZCORN.inc", "r+");
-		ptrfile3 = fopen("Data/_36_77_33_V_Moldabek/withoutBad/ACTNUM.inc", "r+");
-		ptrfile4 = fopen("Data/_36_77_33_V_Moldabek/withoutBad/PERMX.inc", "r+");
-		Nx = 36;
-		Ny = 77;
-		Nz = 33;
-		break;
-
-	case 6:
-		ptrfile1 = fopen("Data/_40_120_20_SAIGUP/COORD.inc", "r+");
-		ptrfile2 = fopen("Data/_40_120_20_SAIGUP/ZCORN.inc", "r+");
-		ptrfile3 = fopen("Data/_40_120_20_SAIGUP/ACTNUM.inc", "r+");
-		ptrfile4 = fopen("Data/_40_120_20_SAIGUP/PERMX.inc", "r+");
-		Nx = 40;
-		Ny = 120;
-		Nz = 20;
-		break;
-
-	case 7:
-		ptrfile1 = fopen("Data/_40_120_20_SAIGUP/withoutBad/COORD.inc", "r+");
-		ptrfile2 = fopen("Data/_40_120_20_SAIGUP/withoutBad/ZCORN.inc", "r+");
-		ptrfile3 = fopen("Data/_40_120_20_SAIGUP/withoutBad/ACTNUM.inc", "r+");
-		ptrfile4 = fopen("Data/_40_120_20_SAIGUP/withoutBad/PERMX.inc", "r+");
-		Nx = 40;
-		Ny = 120;
-		Nz = 20;
-		break;
-
-	case 8:
-		ptrfile1 = fopen("Data/_67_49_10_Bahytzhan/COORD.inc", "r+");
-		ptrfile2 = fopen("Data/_67_49_10_Bahytzhan/ZCORN.inc", "r+");
-		ptrfile3 = fopen("Data/_67_49_10_Bahytzhan/ACTNUM.inc", "r+");
-		ptrfile4 = fopen("Data/_67_49_10_Bahytzhan/NTG.inc", "r+");
-		Nx = 67;
-		Ny = 49;
-		Nz = 10;
-		break;
-
-		//ne rabotaet, delenie na nol` v Uglah
-	case 9:
-		ptrfile1 = fopen("Data/_90_96_36_ ResInsight/COORD.inc", "r+");
-		ptrfile2 = fopen("Data/_90_96_36_ ResInsight/ZCORN.inc", "r+");
-		ptrfile3 = fopen("Data/_90_96_36_ ResInsight/ACTNUM.inc", "r+");
-		ptrfile4 = fopen("Data/_90_96_36_ ResInsight/PERMX.inc", "r+");
-		Nx = 90;
-		Ny = 96;
-		Nz = 36;
-		break;
-
-
-		//ne rabotaet, delenie na nol` v Uglah
-	case 10:
-		ptrfile1 = fopen("Data/_90_96_36_ ResInsight/withoutBad/COORD.inc", "r+");
-		ptrfile2 = fopen("Data/_90_96_36_ ResInsight/withoutBad/ZCORN.inc", "r+");
-		ptrfile3 = fopen("Data/_90_96_36_ ResInsight/withoutBad/ACTNUM.inc", "r+");
-		ptrfile4 = fopen("Data/_90_96_36_ ResInsight/withoutBad/PERMX.inc", "r+");
-		Nx = 90;
-		Ny = 96;
-		Nz = 36;
-		break;
-
-	case 11:
-		ptrfile1 = fopen("Data/_100_100_11_Johansen/COORD.inc", "r+");
-		ptrfile2 = fopen("Data/_100_100_11_Johansen/ZCORN.inc", "r+");
-		ptrfile3 = fopen("Data/_100_100_11_Johansen/ACTNUM.inc", "r+");
-		ptrfile4 = fopen("Data/_100_100_11_Johansen/PERMX.inc", "r+");
-		Nx = 100;
-		Ny = 100;
-		Nz = 11;
-		break;
-
-	case 12:
-		ptrfile1 = fopen("Data/_100_100_11_Johansen/withoutBad/COORD.inc", "r+");
-		ptrfile2 = fopen("Data/_100_100_11_Johansen/withoutBad/ZCORN.inc", "r+");
-		ptrfile3 = fopen("Data/_100_100_11_Johansen/withoutBad/ACTNUM.inc", "r+");
-		ptrfile4 = fopen("Data/_100_100_11_Johansen/withoutBad/PERMX.inc", "r+");
-		Nx = 100;
-		Ny = 100;
-		Nz = 11;
-		break;
-
-	case 13:
-		ptrfile1 = fopen("Data/_100_100_21_Johansen/COORD.inc", "r+");
-		ptrfile2 = fopen("Data/_100_100_21_Johansen/ZCORN.inc", "r+");
-		ptrfile3 = fopen("Data/_100_100_21_Johansen/ACTNUM.inc", "r+");
-		ptrfile4 = fopen("Data/_100_100_21_Johansen/PERMX.inc", "r+");
-		Nx = 100;
-		Ny = 100;
-		Nz = 21;
-		break;
-
-	case 14:
-		ptrfile1 = fopen("Data/_100_100_21_Johansen/withoutBad/COORD.inc", "r+");
-		ptrfile2 = fopen("Data/_100_100_21_Johansen/withoutBad/ZCORN.inc", "r+");
-		ptrfile3 = fopen("Data/_100_100_21_Johansen/withoutBad/ACTNUM.inc", "r+");
-		ptrfile4 = fopen("Data/_100_100_21_Johansen/withoutBad/PERMX.inc", "r+");
-		Nx = 100;
-		Ny = 100;
-		Nz = 21;
-		break;
-
-	case 15:
-		ptrfile1 = fopen("Data/_149_189_16_Johansen/COORD.inc", "r+");
-		ptrfile2 = fopen("Data/_149_189_16_Johansen/ZCORN.inc", "r+");
-		ptrfile3 = fopen("Data/_149_189_16_Johansen/ACTNUM.inc", "r+");
-		ptrfile4 = fopen("Data/_149_189_16_Johansen/PERMX.inc", "r+");
-		Nx = 149;
-		Ny = 189;
-		Nz = 16;
-		break;
-
-	case 16:
-		ptrfile1 = fopen("Data/_149_189_16_Johansen/withoutBad/COORD.inc", "r+");
-		ptrfile2 = fopen("Data/_149_189_16_Johansen/withoutBad/ZCORN.inc", "r+");
-		ptrfile3 = fopen("Data/_149_189_16_Johansen/withoutBad/ACTNUM.inc", "r+");
-		ptrfile4 = fopen("Data/_149_189_16_Johansen/withoutBad/PERMX.inc", "r+");
-		Nx = 149;
-		Ny = 189;
-		Nz = 16;
-		break;
-
 	default:
 		std::cout << "does not exist";
 		break;
 	}
 
-	/**********************************COORDS.INC********************************************/
+	/*
+	*COORDS.INC
+	*/
 	float s1;
 	while ((fscanf(ptrfile1, "%f", &s1) != EOF))
 	{
-		if (!ptrfile1) { break; }
+		if (!ptrfile1) 
+		{ 
+			break; 
+		}
 	}
 	rewind(ptrfile1);
 	coord = new float**[Ny + 1];
@@ -876,11 +776,18 @@ void CMainApplication::FileGeneration(int NUM)
 			}
 		}
 	}
-	/**********************************ZCORN.INC********************************************/
+
+	/*
+	* ZCORN.INC
+	*/
+
 	float s2;
 	while ((fscanf(ptrfile2, "%f", &s2) != EOF))
 	{
-		if (!ptrfile2) { break; }
+		if (!ptrfile2)
+		{
+			break;
+		}
 	}
 	rewind(ptrfile2);
 	zcorn = new float**[2 * Nz];
@@ -896,11 +803,18 @@ void CMainApplication::FileGeneration(int NUM)
 			}
 		}
 	}
-	/**********************************ACTNUM.INC*******************************************/
+
+	/*
+	* ACTNUM.INC
+	*/
+
 	float s3;
 	while ((fscanf(ptrfile3, "%f", &s3) != EOF))
 	{
-		if (!ptrfile3) { break; }
+		if (!ptrfile3) 
+		{ 
+			break; 
+		}
 	}
 	rewind(ptrfile3);
 	actnum = new float**[Nz];
@@ -916,11 +830,18 @@ void CMainApplication::FileGeneration(int NUM)
 			}
 		}
 	}
-	/************************************NTG.INC********************************************/
+
+	/*
+	* NTG.INC
+	*/
+
 	float s4;
 	while ((fscanf(ptrfile4, "%f", &s4) != EOF))
 	{
-		if (!ptrfile4) { break; }
+		if (!ptrfile4) 
+		{
+			break;
+		}
 	}
 	rewind(ptrfile4);
 	ntg = new float**[Nz];
@@ -939,12 +860,22 @@ void CMainApplication::FileGeneration(int NUM)
 	valueMax = ntg[0][0][0];
 	valueMin = ntg[0][0][0];
 	for (int i = 0; i < Nz; i++)
+	{
 		for (int j = 0; j < Ny; j++)
+		{
 			for (int k = 0; k < Nx; k++)
 			{
-				if (ntg[i][j][k] > valueMax)valueMax = ntg[i][j][k];
-				if (ntg[i][j][k] < valueMin)valueMin = ntg[i][j][k];
+				if (ntg[i][j][k] > valueMax)
+				{
+					valueMax = ntg[i][j][k];
+				}
+				if (ntg[i][j][k] < valueMin)
+				{
+					valueMin = ntg[i][j][k];
+				}
 			}
+		}
+	}
 	std::cout << "valueMax = " << valueMax << "    valueMin = " << valueMin << std::endl;
 }
 void CMainApplication::ColorGeneration(float value)
