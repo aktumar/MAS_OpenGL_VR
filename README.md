@@ -1,5 +1,7 @@
 # **Three dimensional visualization of models and physical characteristics of oil and gas reservoir for virtual reality systems**
 
+Paper: [(2017) Three dimensional visualization of models and physical characteristics of oil and gas reservoir for virtual reality systems](https://github.com/aktumar/2017_OpenGL_VR/blob/master/img/paper.pdf)
+
 [![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://support.microsoft.com/ru-ru/windows) 
 [![nVIDIA](https://img.shields.io/badge/nVIDIA-%2376B900.svg?style=for-the-badge&logo=nVIDIA&logoColor=white)](https://www.nvidia.com/ru-ru/)
 [![C++](https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white)](https://www.nvidia.com/ru-ru/)
